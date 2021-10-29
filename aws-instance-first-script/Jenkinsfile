@@ -21,7 +21,7 @@ pipeline {
                  script{
                         dir("terraform")
                         {
-                            git "https://github.com/easyawslearn/Terraform-Tutorial.git"
+                            git "https://github.com/gijareanil/Terraform-tutorial.git"
                         }
                     }
                 }
@@ -35,11 +35,14 @@ pipeline {
             }
             
             steps {
-                sh 'terraform init -input=false'
-                sh 'terraform workspace select ${environment} || terraform workspace new ${environment}'
-
-                sh "terraform plan -input=false -out tfplan "
-                sh 'terraform show -no-color tfplan > tfplan.txt'
+                
+                sh 'pwd;cd terraform/aws-instance-first-script ; terraform init -input=false'
+                sh 'pwd;cd terraform/aws-instance-first-script ; terraform workspace new ${environment}'
+                sh 'pwd;cd terraform/aws-instance-first-script ; terraform workspace select ${environment}'
+                sh "pwd;cd terraform/aws-instance-first-script ;terraform plan -input=false -out tfplan "
+                sh 'pwd;cd terraform/aws-instance-first-script ;terraform show -no-color tfplan > tfplan.txt'
+                
+               
             }
         }
         stage('Approval') {
@@ -57,7 +60,7 @@ pipeline {
 
            steps {
                script {
-                    def plan = readFile 'tfplan.txt'
+                    def plan =  readFile 'terraform/aws-instance-first-script/tfplan.txt'
                     input message: "Do you want to apply the plan?",
                     parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
                }
